@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
 
         <view:NavigationView DataContext="{Binding NavigationViewModel}" />
-        <view:FriendDetailView Grid.Column ="1" DataContext ="{Binding FriendDetailVIewModel}" />
+        <view:FriendDetailView Grid.Column ="1" DataContext ="{Binding FriendDetailViewModel}" />
         
        
         
