@@ -28,22 +28,33 @@ namespace FriendOrganizer.UI.Data
             
 
         }
-        /*
-        public async Task<List<Friend>> GetAllAsync()
-        {
 
+        public async Task SaveAsync(Friend friend)
+        {
             using(var ctx = _contextCreator())
             {
-                var friends =  await ctx.Friends.AsNoTracking().ToListAsync();
-                //await Task.Delay(5000); Test to workin asyncronus programming
-                return friends;
+                ctx.Friends.Attach(friend);
+                ctx.Entry(friend).State = EntityState.Modified;
+                await   ctx.SaveChangesAsync();
             }
-            //ToDo  load data from real DB: 
-            //yield return new Friend { FirstName = "Karen", LastName = "Barseghyan" };
-            //yield return new Friend { FirstName = "Raf", LastName = "Grigorian" };
-            //yield return new Friend { FirstName = "Henrik", LastName = "Mghitaryan" };
-            //yield return new Friend { FirstName = "Suren", LastName = "Hakobyan" };
+        }
 
-        } */
+        /*
+public async Task<List<Friend>> GetAllAsync()
+{
+
+   using(var ctx = _contextCreator())
+   {
+       var friends =  await ctx.Friends.AsNoTracking().ToListAsync();
+       //await Task.Delay(5000); Test to workin asyncronus programming
+       return friends;
+   }
+   //ToDo  load data from real DB: 
+   //yield return new Friend { FirstName = "Karen", LastName = "Barseghyan" };
+   //yield return new Friend { FirstName = "Raf", LastName = "Grigorian" };
+   //yield return new Friend { FirstName = "Henrik", LastName = "Mghitaryan" };
+   //yield return new Friend { FirstName = "Suren", LastName = "Hakobyan" };
+
+} */
     }
 }
