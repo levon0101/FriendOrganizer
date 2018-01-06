@@ -2,6 +2,7 @@
 using FriendOrganizer.UI.Data;
 using FriendOrganizer.UI.StartUp;
 using FriendOrganizer.UI.ViewModel;
+using System;
 using System.Windows;
 
 namespace FriendOrganizer.UI
@@ -21,6 +22,14 @@ namespace FriendOrganizer.UI
             //        new FriendDataService()));
 
             MainWindows.Show();
+        }
+
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show("Unexpeded Error PLS inform the Admins"
+                + Environment.NewLine + e.Exception.Message, "Unexpeded Error ");
+            e.Handled = true;
+
         }
     }
 }
