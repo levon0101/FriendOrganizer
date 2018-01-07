@@ -6,37 +6,28 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 //Test Github // test v2
-namespace FriendOrganizer.UI.Data
+namespace FriendOrganizer.UI.Data.Repositories
 {
-    public class FriendDataService : IFriendDataService
-    {
-        private Func<FriendOrganizerDbContext> _contextCreator;
+    public class FriendRepository : IFriendRepository
+    { 
+        private FriendOrganizerDbContext _context;
 
-        public FriendDataService(Func<FriendOrganizerDbContext> contextCreator )
+        public FriendRepository(FriendOrganizerDbContext context )
         {
-            _contextCreator = contextCreator;
+            _context = context;
         }
         public async Task<Friend> GetByIdAsync(int friendid)
         {
-
-            using (var ctx = _contextCreator())
-            {
-                var friends = await ctx.Friends.AsNoTracking().SingleAsync(f => f.Id == friendid);
+            
+                var friends = await _context.Friends.SingleAsync(f => f.Id == friendid);
                 //await Task.Delay(5000); Test to workin asyncronus programming
                 return friends;
-            }
-            
 
         }
 
-        public async Task SaveAsync(Friend friend)
-        {
-            using(var ctx = _contextCreator())
-            {
-                ctx.Friends.Attach(friend);
-                ctx.Entry(friend).State = EntityState.Modified;
-                await   ctx.SaveChangesAsync();
-            }
+        public async Task SaveAsync()
+        { 
+                await   _context.SaveChangesAsync();  
         }
 
         /*
