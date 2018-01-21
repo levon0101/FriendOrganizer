@@ -3,17 +3,19 @@ using Prism.Events;
 using FriendOrganizer.UI.Event;
 using System;
 using FriendOrganizer.UI.View.Services;
+using System.Windows.Input;
+using Prism.Commands;
 
 namespace FriendOrganizer.UI.ViewModel
 {
-    public class MainViewModel: ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
         private Func<IFriendDetailViewModel> _friendDetailViewModelCreator;
         private IMessageDialogService _messageDialogService;
         private IEventAggregator _eventAggregator;
         private IFriendDetailViewModel _friendDetailViewModel;
 
-        public MainViewModel(INavigationViewModel navigationViewModel, 
+        public MainViewModel(INavigationViewModel navigationViewModel,
             Func<IFriendDetailViewModel> friendDetailViewModelCreator,
             IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService)
@@ -25,7 +27,7 @@ namespace FriendOrganizer.UI.ViewModel
             _eventAggregator.GetEvent<OpenFriendDetailViewEvent>()
                .Subscribe(OnOpenFriendDetailView);
 
-
+            CreateNewFriendCommand = new DelegateCommand(OnCreateNewFriendExecute);
 
             NavigationViewModel = navigationViewModel;
         }
@@ -34,7 +36,9 @@ namespace FriendOrganizer.UI.ViewModel
         {
             await NavigationViewModel.LoadAsync();
         }
-        
+
+        public ICommand CreateNewFriendCommand { get; }
+
         public INavigationViewModel NavigationViewModel { get; }
 
         public IFriendDetailViewModel FriendDetailViewModel
@@ -47,17 +51,22 @@ namespace FriendOrganizer.UI.ViewModel
             }
         }
 
-        private async void OnOpenFriendDetailView(int friendId)
+        private async void OnOpenFriendDetailView(int? friendId)
         {
-            if(FriendDetailViewModel != null && FriendDetailViewModel.HasChanges)
+            if (FriendDetailViewModel != null && FriendDetailViewModel.HasChanges)
             {
-               var result =   _messageDialogService.ShowOkCancelDialog("You've made changes. Nawigate away ?", "Question");
+                var result = _messageDialogService.ShowOkCancelDialog("You've made changes. Nawigate away ?", "Question");
 
                 if (result == MessageDialogResult.Cancel)
                     return;
             }
             FriendDetailViewModel = _friendDetailViewModelCreator();
             await FriendDetailViewModel.LoadAsync(friendId);
+        }
+
+        private void OnCreateNewFriendExecute()
+        {
+            OnOpenFriendDetailView(null);
         }
     }
 }
