@@ -47,7 +47,7 @@ namespace FriendOrganizer.UI.Wrapper
 
         public int? FavoriteLanguageId
         {
-            get { return GetValue<int>(); }
+            get { return GetValue<int?>(); }
             set { SetValue(value); }
         }
 
