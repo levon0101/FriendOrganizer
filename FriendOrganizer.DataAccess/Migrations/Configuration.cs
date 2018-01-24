@@ -22,6 +22,17 @@ namespace FriendOrganizer.DataAccess.Migrations
             new Friend { FirstName = "Henrik", LastName = "Mghitaryan" },
             new Friend { FirstName = "Suren", LastName = "Hakobyan" }
             );
+
+            context.ProgrammingLanguages.AddOrUpdate(
+                f => f.Name,
+
+                new ProgrammingLanguage { Name = "C#" },
+                new ProgrammingLanguage { Name = "TypeScript" },
+                new ProgrammingLanguage { Name = "F#" },
+                new ProgrammingLanguage { Name = "Swift" },
+                new ProgrammingLanguage { Name = "Java" },
+                new ProgrammingLanguage { Name = "C"},
+                new ProgrammingLanguage { Name = "C++" });
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

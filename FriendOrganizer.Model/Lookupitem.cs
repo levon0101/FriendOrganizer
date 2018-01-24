@@ -12,6 +12,9 @@ namespace FriendOrganizer.Model
 
         public string DisplayMember { get; set; }
 
-
+    }
+    public class NullLookupItem:Lookupitem
+    {
+        public new int? Id { get { return null; } set { } }
     }
 }
