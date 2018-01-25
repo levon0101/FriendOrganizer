@@ -17,22 +17,28 @@ namespace FriendOrganizer.DataAccess.Migrations
         {
             context.Friends.AddOrUpdate(
                 f => f.FirstName,
-            new Friend { FirstName = "Karen", LastName = "Barseghyan" },
-            new Friend { FirstName = "Raf", LastName = "Grigorian" },
-            new Friend { FirstName = "Henrik", LastName = "Mghitaryan" },
-            new Friend { FirstName = "Suren", LastName = "Hakobyan" }
-            );
+                new Friend { FirstName = "Karen", LastName = "Barseghyan" },
+                new Friend { FirstName = "Raf", LastName = "Grigorian" },
+                new Friend { FirstName = "Henrik", LastName = "Mghitaryan" },
+                new Friend { FirstName = "Suren", LastName = "Hakobyan" }
+                );
 
             context.ProgrammingLanguages.AddOrUpdate(
                 f => f.Name,
-
                 new ProgrammingLanguage { Name = "C#" },
                 new ProgrammingLanguage { Name = "TypeScript" },
                 new ProgrammingLanguage { Name = "F#" },
                 new ProgrammingLanguage { Name = "Swift" },
                 new ProgrammingLanguage { Name = "Java" },
-                new ProgrammingLanguage { Name = "C"},
-                new ProgrammingLanguage { Name = "C++" });
+                new ProgrammingLanguage { Name = "C" },
+                new ProgrammingLanguage { Name = "C++" }
+                );
+
+
+            context.FriendPhoneNumbers.AddOrUpdate(
+               pn => pn.Number,
+               new FriendPhoneNumber { Number = "+374 55979969", FriendId = context.Friends.First().Id }
+               );
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

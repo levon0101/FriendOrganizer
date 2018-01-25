@@ -6,7 +6,10 @@ using FriendOrganizer.UI.View.Services;
 using FriendOrganizer.UI.Wrapper;
 using Prism.Commands;
 using Prism.Events;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -38,11 +41,28 @@ namespace FriendOrganizer.UI.ViewModel
 
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute);
+            AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
+            RemovePhoneNumberCommand = new DelegateCommand(OnRemovePhoneNumberCommand, OnRemovePhoneNumberCanExecute);
 
             ProgrammingLanguages = new ObservableCollection<Lookupitem>();
+            PhoneNumbers = new ObservableCollection<FriendPhoneNumberWrapper>();
         }
 
-        
+        private void OnRemovePhoneNumberCommand()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void OnAddPhoneNumberExecute()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private bool OnRemovePhoneNumberCanExecute()
+        {
+            return SelectedPhoneNumber != null;
+        }
+
         public async Task LoadAsync(int? friendId)
         {
             var friend = friendId.HasValue
@@ -50,7 +70,40 @@ namespace FriendOrganizer.UI.ViewModel
                 : CreateNewFriend();
 
             InitializeFriend(friend);
+
+            InitializeFriendPhoneNumbers(friend.PhoneNumbers);
+
             await LoadProgrammingLenguagesLookupAsync();
+        }
+
+        private void InitializeFriendPhoneNumbers(ICollection<FriendPhoneNumber> phoneNumbers)
+        {
+            foreach (var wrapper in PhoneNumbers)
+            {
+                wrapper.PropertyChanged -= FriendPhoneNumberWrapper_PropertyChanged;
+            }
+
+            PhoneNumbers.Clear();
+
+            foreach (var friendPhoneNumber in phoneNumbers)
+            {
+                var wrapper = new FriendPhoneNumberWrapper(friendPhoneNumber);
+                PhoneNumbers.Add(wrapper);
+                wrapper.PropertyChanged += FriendPhoneNumberWrapper_PropertyChanged;
+            }
+            
+        }
+
+        private void FriendPhoneNumberWrapper_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!HasChanges)
+            {
+                HasChanges = _friendRepository.HasChanges();
+            }
+            if(e.PropertyName == nameof(FriendPhoneNumberWrapper.HasErrors))
+            {
+                ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+            }
         }
 
         public FriendWrapper Friend
@@ -63,6 +116,20 @@ namespace FriendOrganizer.UI.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        private FriendPhoneNumberWrapper _selectedPhoneNumber;
+
+        public FriendPhoneNumberWrapper SelectedPhoneNumber
+        {
+            get { return _selectedPhoneNumber; }
+            set
+            {
+                _selectedPhoneNumber = value;
+                OnPropertyChanged();
+                ((DelegateCommand)RemovePhoneNumberCommand).RaiseCanExecuteChanged();
+            }
+        }
+
 
         public bool HasChanges
         {
@@ -79,8 +146,16 @@ namespace FriendOrganizer.UI.ViewModel
         }
 
         public ICommand SaveCommand { get; }
+
         public ICommand DeleteCommand { get; }
+
+        public ICommand AddPhoneNumberCommand { get; }
+
+        public ICommand RemovePhoneNumberCommand { get; }
+
         public ObservableCollection<Lookupitem> ProgrammingLanguages { get; }
+
+        public ObservableCollection<FriendPhoneNumberWrapper> PhoneNumbers { get; }
 
         private void InitializeFriend(Friend friend)
         {
@@ -108,7 +183,7 @@ namespace FriendOrganizer.UI.ViewModel
         private async Task LoadProgrammingLenguagesLookupAsync()
         {
             ProgrammingLanguages.Clear();
-            ProgrammingLanguages.Add(new NullLookupItem { DisplayMember = " - "});
+            ProgrammingLanguages.Add(new NullLookupItem { DisplayMember = " - " });
             var lookup = await _programmingLanguageLookupDataService.GetProgrammingLanguageLookupAsync();
             foreach (var loocupItem in lookup)
             {

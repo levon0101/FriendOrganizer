@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace FriendOrganizer.UI.Data.Repositories
 {
     public class FriendRepository : IFriendRepository
-    { 
+    {
         private FriendOrganizerDbContext _context;
 
-        public FriendRepository(FriendOrganizerDbContext context )
+        public FriendRepository(FriendOrganizerDbContext context)
         {
             _context = context;
         }
@@ -24,10 +24,12 @@ namespace FriendOrganizer.UI.Data.Repositories
 
         public async Task<Friend> GetByIdAsync(int friendid)
         {
-            
-                var friends = await _context.Friends.SingleAsync(f => f.Id == friendid);
-                //await Task.Delay(5000); Test to workin asyncronus programming
-                return friends;
+
+            var friends = await _context.Friends
+                .Include(f => f.PhoneNumbers)
+                .SingleAsync(f => f.Id == friendid);
+            //await Task.Delay(5000); Test to workin asyncronus programming
+            return friends;
 
         }
 
@@ -39,12 +41,12 @@ namespace FriendOrganizer.UI.Data.Repositories
         public void Remove(Friend model)
         {
             _context.Friends.Remove(model);
-            
+
         }
 
         public async Task SaveAsync()
-        { 
-                await   _context.SaveChangesAsync();  
+        {
+            await _context.SaveChangesAsync();
         }
 
         /*
