@@ -50,12 +50,23 @@ namespace FriendOrganizer.UI.ViewModel
 
         private void OnRemovePhoneNumberCommand()
         {
-            //throw new NotImplementedException();
+            SelectedPhoneNumber.PropertyChanged += FriendPhoneNumberWrapper_PropertyChanged;
+            _friendRepository.RemovePhoneNumber(SelectedPhoneNumber.Model);
+            PhoneNumbers.Remove(SelectedPhoneNumber);
+            SelectedPhoneNumber = null;
+            HasChanges = _friendRepository.HasChanges();
+            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
         }
 
         private void OnAddPhoneNumberExecute()
         {
-            //throw new NotImplementedException();
+            var newNumber = new FriendPhoneNumberWrapper(new FriendPhoneNumber());
+            newNumber.PropertyChanged += FriendPhoneNumberWrapper_PropertyChanged;
+
+            PhoneNumbers.Add(newNumber);
+            Friend.Model.PhoneNumbers.Add(newNumber.Model);
+            newNumber.Number = "";
+
         }
 
         private bool OnRemovePhoneNumberCanExecute()
