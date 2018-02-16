@@ -30,7 +30,9 @@ namespace FriendOrganizer.UI.StartUp
 
             builder.RegisterType<LookupDataService>().AsImplementedInterfaces();
             builder.RegisterType<FriendRepository>().As<IFriendRepository>();
-            
+            builder.RegisterType<MeetingRepository>().As<IMeetingRepository>();
+
+
             return builder.Build();
         }
     }
