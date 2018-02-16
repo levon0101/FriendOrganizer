@@ -49,6 +49,30 @@ namespace FriendOrganizer.UI.ViewModel
         protected abstract bool OnSaveCanExecute();
         protected abstract void OnSaveExecute();
 
+        //protected virtual void RaiseDetailDeletedEvent(int modelId)
+        //{
+        //    EventAggregator.GetEvent<AfterDetailDeletedEvent>().Publish(new AfterDetailDeletedEventArgs
+        //    {
+        //        Id = modelId,
+        //        ViewModelName = this.GetType().Name
+        //    });
+        //}
+
+        //protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
+        //{
+
+        //   // throw new NotImplementedException();
+
+        //   //or
+
+        //    EventAggregator.GetEvent<AfteeDetailSaveEvent>().Publish(new AfterDetailSaveEventArgs
+        //    {
+        //        Id = modelId,
+        //        DisplayMember = displayMember,
+        //        ViewModelName = this.GetType().Name
+        //    });
+        //}
+
         protected virtual void ReiseDetailDeleteEvent(int modelId)
         {
             EventAggregator.GetEvent<AfterDetailDeletedEvent>().Publish(new AfterDetailDeletedEventArgs
