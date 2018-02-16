@@ -42,19 +42,19 @@ namespace FriendOrganizer.DataAccess.Migrations
                );
 
 
-            //context.Meetings.AddOrUpdate(
-            //    m => m.Title,
-            //    new Meeting
-            //    {
-            //        Title = "Watching Soccer",
-            //        DateFrom = new DateTime(2018, 5, 26),
-            //        DateTo = new DateTime(2018, 5, 26),
-            //        Friends = new List<Friend>
-            //        {
-            //            context.Friends.Single(f=>f.FirstName =="Thomas" && f.LastName == "Huber"),
-            //            context.Friends.Single(f=>f.FirstName =="Levon" && f.LastName == "Mardanyan")
-            //        }
-            //    });
+            context.Meetings.AddOrUpdate(
+                m => m.Title,
+                new Meeting
+                {
+                    Title = "Watching Soccer",
+                    DateFrom = new DateTime(2018, 5, 26),
+                    DateTo = new DateTime(2018, 5, 26),
+                    Friends = new List<Friend>
+                    {
+                        context.Friends.Single(f=>f.FirstName =="Thomas" && f.LastName == "Huber"),
+                        context.Friends.Single(f=>f.FirstName =="Levon" && f.LastName == "Mardanyan")
+                    }
+                });
 
             //  This method will be called after migrating to the latest version.
 
