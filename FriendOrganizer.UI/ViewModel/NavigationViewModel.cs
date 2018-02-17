@@ -16,15 +16,20 @@ namespace FriendOrganizer.UI.ViewModel
     {
         private IEventAggregator _eventAggregator;
         private IFriendLookupDataService _friendLookupDataService;
+        private IMeetingLookupDataService _meetingLookupDataService;
 
         public ObservableCollection<NavigationItemViewModel> Friends { get; }
+        public ObservableCollection<NavigationItemViewModel> Meetings { get; }
 
         public NavigationViewModel(IFriendLookupDataService friendLookupDataService,
+            IMeetingLookupDataService meetingLookupDataService,
             IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
             _friendLookupDataService = friendLookupDataService;
+            _meetingLookupDataService = meetingLookupDataService;
             Friends = new ObservableCollection<NavigationItemViewModel>();
+            Meetings = new ObservableCollection<NavigationItemViewModel>();
             _eventAggregator.GetEvent<AfteeDetailSaveEvent>().Subscribe(AfterDetailSaved);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
         }
@@ -34,9 +39,20 @@ namespace FriendOrganizer.UI.ViewModel
             var lookup = await _friendLookupDataService.GetFriendLookupAsync();
             Friends.Clear();
             foreach (var item in lookup)
+            {
                 Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
                     nameof(FriendDetailViewModel),
                     _eventAggregator));
+            }
+
+            lookup = await _meetingLookupDataService.GetMeetingLookupAsync();
+            Meetings.Clear();
+            foreach (var item in lookup)
+            {
+                Meetings.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
+                    nameof(MeetingDetailViewModel),
+                    _eventAggregator));
+            }
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
@@ -44,38 +60,52 @@ namespace FriendOrganizer.UI.ViewModel
             switch (args.ViewModelName)
             {
                 case nameof(FriendDetailViewModel):
-                    var friend = Friends.SingleOrDefault(f => f.Id == args.Id);
-                    if (friend != null)
-                    {
-                        Friends.Remove(friend);
-                    }
+                    AfterDetailDeleted(Friends, args);
                     break;
-
+                case nameof(MeetingDetailViewModel):
+                    AfterDetailDeleted(Meetings, args);
+                    break;
             }
 
         }
 
-        private void AfterDetailSaved(AfterDetailSaveEventArgs obj)
+        private void AfterDetailDeleted(ObservableCollection<NavigationItemViewModel> items, AfterDetailDeletedEventArgs args)
         {
-            switch (obj.ViewModelName)
+            var item = items.SingleOrDefault(f => f.Id == args.Id);
+            if (item != null)
+            {
+                items.Remove(item); 
+            }
+        }
+
+        private void AfterDetailSaved(AfterDetailSaveEventArgs args)
+        {
+            switch (args.ViewModelName)
             {
                 case nameof(FriendDetailViewModel):
-                    var lookupItem = Friends.SingleOrDefault(l => l.Id == obj.Id);
-                    if (lookupItem == null)
-                    {
-                        Friends.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember,
-                            nameof(FriendDetailViewModel),
-                            _eventAggregator));
-                    }
-                    else
-                    {
-                        lookupItem.DisplayMember = obj.DisplayMember;
-                    }
+                    AfterDetailSaved(Friends, args);
+                    break; 
+                case nameof(MeetingDetailViewModel):
+                    AfterDetailSaved(Meetings, args);
                     break;
             }
-          
+
 
         }
 
+        private void AfterDetailSaved(ObservableCollection<NavigationItemViewModel> items, AfterDetailSaveEventArgs args)
+        {
+            var lookupItem = items.SingleOrDefault(l => l.Id == args.Id); 
+            if (lookupItem == null)
+            {
+                items.Add(new NavigationItemViewModel(args.Id, args.DisplayMember,
+                    nameof(args.ViewModelName),
+                    _eventAggregator));
+            }
+            else
+            {
+                lookupItem.DisplayMember = args.DisplayMember;
+            }
+        }
     }
 }

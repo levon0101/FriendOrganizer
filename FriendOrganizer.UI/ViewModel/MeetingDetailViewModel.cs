@@ -12,7 +12,7 @@ using Prism.Events;
 
 namespace FriendOrganizer.UI.ViewModel
 {
-    class MeetingDetailViewModel : DetailViewModelBase, IMeetingDetailViewModel
+    public class MeetingDetailViewModel : DetailViewModelBase, IMeetingDetailViewModel
     {
         private IMessageDialogService _messageDialogService;
         private MeetingWrapper _meeting;
@@ -39,6 +39,17 @@ namespace FriendOrganizer.UI.ViewModel
             }
         }
 
+        protected override void OnDeleteExecute()
+        {
+            var result = _messageDialogService.ShowOkCancelDialog($"Do you realy delete the meeting {Meeting.Title}", "Question");
+            if (result == MessageDialogResult.Ok)
+            {
+                _meetingRepository.Remove(Meeting.Model);
+                _meetingRepository.SaveAsync();
+                ReiseDetailDeleteEvent(Meeting.Id);
+            }
+
+        }
 
         public override async Task LoadAsync(int? meetingId)
         {
@@ -50,17 +61,6 @@ namespace FriendOrganizer.UI.ViewModel
         }
 
 
-        protected override void OnDeleteExecute()
-        {
-            var result = _messageDialogService.ShowOkCancelDialog($"Do you realy delete the meeting {Meeting.Title}", "Question");
-            if(result == MessageDialogResult.Ok)
-            {
-                _meetingRepository.Remove(Meeting.Model);
-                _meetingRepository.SaveAsync();
-                ReiseDetailDeleteEvent(Meeting.Id);
-            }
-
-        }
 
         protected override bool OnSaveCanExecute()
         {
