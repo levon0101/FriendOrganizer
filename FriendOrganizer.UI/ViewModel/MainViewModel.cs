@@ -5,23 +5,26 @@ using System;
 using FriendOrganizer.UI.View.Services;
 using System.Windows.Input;
 using Prism.Commands;
+using Autofac.Features.Indexed;
 
 namespace FriendOrganizer.UI.ViewModel
 {
     public class MainViewModel : ViewModelBase
-    {
-        private Func<IFriendDetailViewModel> _friendDetailViewModelCreator;
+    { 
         private IMessageDialogService _messageDialogService;
         private IEventAggregator _eventAggregator;
+        private IIndex<string, IDetailViewModel> _detailViewModelCreator;
         private IDetailViewModel _detailViewModel;
 
+
+
         public MainViewModel(INavigationViewModel navigationViewModel,
-            Func<IFriendDetailViewModel> friendDetailViewModelCreator,
+            IIndex<string,IDetailViewModel> detailViewModelCreator,
             IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService)
         {
             _eventAggregator = eventAggregator;
-            _friendDetailViewModelCreator = friendDetailViewModelCreator;
+            _detailViewModelCreator = detailViewModelCreator; 
             _messageDialogService = messageDialogService;
 
             _eventAggregator.GetEvent<OpenDetailViewEvent>()
@@ -65,16 +68,8 @@ namespace FriendOrganizer.UI.ViewModel
                 if (result == MessageDialogResult.Cancel)
                     return;
             }
-           
-            switch (args.ViewModelName)
-            {
-                case nameof(FriendDetailViewModel):
-                    {
-                        DetailViewModel = _friendDetailViewModelCreator();
-                        
-                        break;
-                    }
-            }
+             
+            DetailViewModel = _detailViewModelCreator[args.ViewModelName]; // using AutoFac.Indexer constructor
 
             await DetailViewModel.LoadAsync(args.Id);
 
@@ -82,9 +77,10 @@ namespace FriendOrganizer.UI.ViewModel
 
         private void OnCreateNewDetailExecute(Type viewModelType)
         {
-            OnOpenDetailView(new OpenDetailViewEventArgs {
+            OnOpenDetailView(new OpenDetailViewEventArgs
+            {
                 ViewModelName = viewModelType.Name
-                });
+            });
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
