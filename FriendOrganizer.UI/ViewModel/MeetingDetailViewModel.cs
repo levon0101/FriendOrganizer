@@ -58,10 +58,10 @@ namespace FriendOrganizer.UI.ViewModel
                 ((DelegateCommand)AddFriendCommand).RaiseCanExecuteChanged();
             }
         }
-
+        
         public Friend SelectedAddedFriend
         {
-            get
+            get 
             {
                 return _selectedAddedFriend;
             }
@@ -99,6 +99,8 @@ namespace FriendOrganizer.UI.ViewModel
             var meeting = meetingId.HasValue
                 ? await _meetingRepository.GetByIdAsync(meetingId.Value)
                 : CreateNewMeeting();
+
+            Id = meeting.Id;
 
             InitializeMeeting(meeting);
 
@@ -173,7 +175,11 @@ namespace FriendOrganizer.UI.ViewModel
         protected override async void OnSaveExecute()
         {
             await _meetingRepository.SaveAsync();
+
             HasChanges = _meetingRepository.HasChanges();
+
+            Id = Meeting.Id; 
+
             ReiseDetailSaveEvent(Meeting.Id, Meeting.Title);
         }
 
@@ -202,6 +208,10 @@ namespace FriendOrganizer.UI.ViewModel
                 {
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
                 }
+                if(e.PropertyName == nameof(Meeting.Title))
+                {
+                    SetTitle();
+                }
             };
 
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
@@ -210,6 +220,13 @@ namespace FriendOrganizer.UI.ViewModel
                 //Little trick to trigger validation
                 Meeting.Title = "";
             }
+
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            Title = Meeting.Title;
         }
     }
 }

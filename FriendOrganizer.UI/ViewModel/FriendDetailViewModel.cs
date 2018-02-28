@@ -75,6 +75,7 @@ namespace FriendOrganizer.UI.ViewModel
             var friend = friendId.HasValue
                 ? await _friendRepository.GetByIdAsync(friendId.Value)
                 : CreateNewFriend();
+            Id = friend.Id;
 
             InitializeFriend(friend);
 
@@ -160,6 +161,11 @@ namespace FriendOrganizer.UI.ViewModel
                 {
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
                 }
+                if(e.PropertyName == nameof(Friend.FirstName) 
+                ||e.PropertyName == nameof(Friend.LastName))
+                {
+                    SetTitle();
+                }
             };
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
             if (Friend.Id == 0)
@@ -167,6 +173,12 @@ namespace FriendOrganizer.UI.ViewModel
                 //Litle trick to trriger the validation
                 Friend.FirstName = "";
             }
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            Title = $"{Friend.FirstName} {Friend.LastName}";
         }
 
         private async Task LoadProgrammingLenguagesLookupAsync()
@@ -184,6 +196,7 @@ namespace FriendOrganizer.UI.ViewModel
         {
             await _friendRepository.SaveAsync();
             HasChanges = _friendRepository.HasChanges();
+            Id = Friend.Id; 
             ReiseDetailSaveEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
 
         }

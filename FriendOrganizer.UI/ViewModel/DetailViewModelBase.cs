@@ -14,20 +14,50 @@ namespace FriendOrganizer.UI.ViewModel
     {
         private bool _hasChanges;
         protected IEventAggregator EventAggregator;
+        private int _id;
+        private string _title;
 
         public DetailViewModelBase(IEventAggregator eventAggregator)
         {
             EventAggregator = eventAggregator;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute);
+            CloseDetailViewCommand = new DelegateCommand(OnCloseDetailViewExecute);
 
         }
+
+        protected virtual void OnCloseDetailViewExecute()
+        {
+            EventAggregator.GetEvent<AfterDetailClosedEvent>()
+                .Publish(new AfterDetailClosedEventArgs
+                {
+                    Id = this.Id,
+                    ViewModelName = this.GetType().Name
+
+                });
+        }
+
         public abstract Task LoadAsync(int? id);
 
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
+        public DelegateCommand CloseDetailViewCommand { get; }
 
+        public int Id
+        {
+            get { return _id; }
+           protected set { _id = value; }
+        }
 
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool HasChanges
         {
@@ -49,7 +79,7 @@ namespace FriendOrganizer.UI.ViewModel
         protected abstract bool OnSaveCanExecute();
         protected abstract void OnSaveExecute();
 
-        //protected virtual void RaiseDetailDeletedEvent(int modelId)
+         //protected virtual void RaiseDetailDeletedEvent(int modelId)
         //{
         //    EventAggregator.GetEvent<AfterDetailDeletedEvent>().Publish(new AfterDetailDeletedEventArgs
         //    {
