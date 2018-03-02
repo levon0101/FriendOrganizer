@@ -2,7 +2,7 @@
 
 namespace FriendOrganizer.UI.Event
 {
-    public class AfteeDetailSaveEvent:PubSubEvent<AfterDetailSaveEventArgs >
+    public class AfterDetailSavedEvent:PubSubEvent<AfterDetailSaveEventArgs >
     {
     }
 

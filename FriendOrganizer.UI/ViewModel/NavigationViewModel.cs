@@ -30,7 +30,7 @@ namespace FriendOrganizer.UI.ViewModel
             _meetingLookupDataService = meetingLookupDataService;
             Friends = new ObservableCollection<NavigationItemViewModel>();
             Meetings = new ObservableCollection<NavigationItemViewModel>();
-            _eventAggregator.GetEvent<AfteeDetailSaveEvent>().Subscribe(AfterDetailSaved);
+            _eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
         }
 

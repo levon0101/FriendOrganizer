@@ -99,7 +99,7 @@
     <Compile Include="Data\Repositories\IGenereicRepository.cs" />
     <Compile Include="Data\Repositories\IMeetingRepository.cs" />
     <Compile Include="Data\Repositories\MeetingRepository.cs" />
-    <Compile Include="Event\AfteeDetailSaveEvent.cs" />
+    <Compile Include="Event\AfterDetailSaveEvent.cs" />
     <Compile Include="Event\AfterDetailClosedEvent.cs" />
     <Compile Include="Event\AfterDetailDeletedEvent.cs" />
     <Compile Include="Event\OpenDetailViewEvent.cs" />

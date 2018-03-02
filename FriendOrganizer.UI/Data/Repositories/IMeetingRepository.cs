@@ -8,5 +8,6 @@ namespace FriendOrganizer.UI.Data.Repositories
     {
         //Task<Meeting> GetByIdAsync(int id);
         Task<List<Friend>> GetAllFriendsAsync();
+        Task ReloadFriendAsync(int friendId);
     }
 }
