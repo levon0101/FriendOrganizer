@@ -42,11 +42,11 @@ namespace FriendOrganizer.UI.ViewModel
 
         }
 
-        protected virtual void OnCloseDetailViewExecute()
+        protected virtual async void OnCloseDetailViewExecute()
         {
             if (HasChanges)
             {
-                var result = MessageDialogService.ShowOkCancelDialog(
+                var result = await MessageDialogService.ShowOkCancelDialogAsync(
                     "You have made changes, Close this item?", "Question");
                 if (result == MessageDialogResult.Cancel) //if cancel don't close tab                    
                 {
@@ -159,13 +159,13 @@ namespace FriendOrganizer.UI.ViewModel
                 var databaseValues = ex.Entries.Single().GetDatabaseValues();
                 if (databaseValues == null)
                 {
-                    MessageDialogService.ShowInfoDialog("The entity has been deleted by anoter user");
+                    await MessageDialogService.ShowInfoDialogAsync("The entity has been deleted by anoter user");
                     ReiseDetailDeleteEvent(Id);
                     return;
                 }
 
 
-                var result = MessageDialogService.ShowOkCancelDialog("The Entity has been changed in the meantime form someone else, " +
+                var result = await MessageDialogService.ShowOkCancelDialogAsync("The Entity has been changed in the meantime form someone else, " +
                 "Click ok to Save anyware or Cancel for reload from DB", "Question");
 
                 if (result == MessageDialogResult.Ok)

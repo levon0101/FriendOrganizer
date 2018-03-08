@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,17 +11,20 @@ namespace FriendOrganizer.UI.View.Services
 {
     public class MessageDialogService : IMessageDialogService
     {
-        public MessageDialogResult ShowOkCancelDialog(string text, string title)
-        {
-            var result = MessageBox.Show(text, title, MessageBoxButton.OKCancel);
+        private MetroWindow MetroWindow => (MetroWindow)App.Current.MainWindow;
 
-            return result == MessageBoxResult.OK
+        public async Task<MessageDialogResult> ShowOkCancelDialogAsync(string text, string title)
+        { 
+            var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
+
+            return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative
                 ? MessageDialogResult.Ok
                 : MessageDialogResult.Cancel;
         }
-        public void ShowInfoDialog(string text)
+        public async Task ShowInfoDialogAsync(string text)
         {
-            MessageBox.Show(text, "Info");
+
+           await MetroWindow.ShowMessageAsync("Info", text, MessageDialogStyle.Affirmative);
         }
     }
 

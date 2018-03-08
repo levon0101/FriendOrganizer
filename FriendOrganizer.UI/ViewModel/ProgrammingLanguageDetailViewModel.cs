@@ -111,7 +111,7 @@ namespace FriendOrganizer.UI.ViewModel
                 {
                     ex = ex.InnerException;
                 }
-                MessageDialogService.ShowInfoDialog("Error while Saving the entities, " + "the data will be reloaded. Details: " + ex.Message);
+                await MessageDialogService.ShowInfoDialogAsync("Error while Saving the entities, " + "the data will be reloaded. Details: " + ex.Message);
                 await LoadAsync(Id);
             }
         }
@@ -133,7 +133,7 @@ namespace FriendOrganizer.UI.ViewModel
             var isReferenced = await _programmingLanguageRepository.IsReferencedByFriendAsync(SelectedProgrammingLanguage.Id);
             if(isReferenced)
             {
-                MessageDialogService.ShowInfoDialog($"The Language {SelectedProgrammingLanguage.Name} " +
+                await MessageDialogService.ShowInfoDialogAsync($"The Language {SelectedProgrammingLanguage.Name} " +
                     $"can't be deleted, as it referenced by least of friend");
                 return;
             }
