@@ -4,6 +4,7 @@ using Prism.Commands;
 using Prism.Events;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -144,6 +145,46 @@ namespace FriendOrganizer.UI.ViewModel
                 DisplayMember = displayMember,
                 ViewModelName = this.GetType().Name
             });
+        }
+
+
+        protected async Task SaveWithOptimisticConcurencyAsync(Func<Task> saveFunc, Action afterSaveAction)
+        {
+            try
+            {
+                await saveFunc();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var databaseValues = ex.Entries.Single().GetDatabaseValues();
+                if (databaseValues == null)
+                {
+                    MessageDialogService.ShowInfoDialog("The entity has been deleted by anoter user");
+                    ReiseDetailDeleteEvent(Id);
+                    return;
+                }
+
+
+                var result = MessageDialogService.ShowOkCancelDialog("The Entity has been changed in the meantime form someone else, " +
+                "Click ok to Save anyware or Cancel for reload from DB", "Question");
+
+                if (result == MessageDialogResult.Ok)
+                {
+                    var entry = ex.Entries.Single();
+                    entry.OriginalValues.SetValues(entry.GetDatabaseValues());
+                    await saveFunc();
+                }
+                else
+                {
+                    await ex.Entries.Single().ReloadAsync();
+                    await LoadAsync(Id);
+                }
+            }
+
+            //HasChanges = _friendRepository.HasChanges();
+            //Id = Friend.Id;
+            //ReiseDetailSaveEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+            afterSaveAction();
         }
 
     }

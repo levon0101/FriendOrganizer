@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -45,7 +47,7 @@ namespace FriendOrganizer.UI.ViewModel
             PhoneNumbers = new ObservableCollection<FriendPhoneNumberWrapper>();
         }
 
-    
+
         private void OnRemovePhoneNumberCommand()
         {
             SelectedPhoneNumber.PropertyChanged += FriendPhoneNumberWrapper_PropertyChanged;
@@ -196,10 +198,16 @@ namespace FriendOrganizer.UI.ViewModel
 
         protected override async void OnSaveExecute()
         {
-            await _friendRepository.SaveAsync();
-            HasChanges = _friendRepository.HasChanges();
-            Id = Friend.Id;
-            ReiseDetailSaveEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+            await SaveWithOptimisticConcurencyAsync(_friendRepository.SaveAsync,
+            () =>
+            {
+                HasChanges = _friendRepository.HasChanges();
+                Id = Friend.Id;
+                ReiseDetailSaveEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+
+            });
+           
+
 
         }
 
@@ -211,6 +219,7 @@ namespace FriendOrganizer.UI.ViewModel
 
         protected override async void OnDeleteExecute()
         {
+
             if (await _friendRepository.HasMeetingsAsync(Friend.Id))
             {
                 MessageDialogService.ShowInfoDialog($"{Friend.FirstName} {Friend.LastName} can't be deleted, He part of least one meeting");
